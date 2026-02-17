@@ -1,0 +1,70 @@
+name: 'NEAR Marketplace Auto-Submit'
+description: 'Automatically submit tools and packages to NEAR Marketplace on release'
+author: 'NEAR Marketplace Team'
+
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
+
+inputs:
+  api-key:
+    description: 'NEAR Marketplace API key (use secrets.NEAR_MARKET_API_KEY)'
+    required: true
+  
+  project-path:
+    description: 'Path to project root (containing package.json/pyproject.toml/Cargo.toml)'
+    required: false
+    default: '.'
+  
+  name:
+    description: 'Override project name (defaults to package metadata)'
+    required: false
+  
+  description:
+    description: 'Override project description'
+    required: false
+  
+  tags:
+    description: 'Comma-separated tags (e.g., "automation,ai,tools")'
+    required: false
+  
+  category:
+    description: 'Project category (e.g., "development", "productivity")'
+    required: false
+    default: 'development'
+  
+  homepage:
+    description: 'Project homepage URL'
+    required: false
+  
+  repository:
+    description: 'Repository URL (defaults to GitHub repo)'
+    required: false
+  
+  version:
+    description: 'Version override (defaults to release tag or package version)'
+    required: false
+  
+  update-existing:
+    description: 'Update existing listing if found (true/false)'
+    required: false
+    default: 'true'
+  
+  dry-run:
+    description: 'Test mode - validate but do not submit (true/false)'
+    required: false
+    default: 'false'
+
+outputs:
+  listing-id:
+    description: 'NEAR Marketplace listing ID'
+  
+  listing-url:
+    description: 'Public URL of the marketplace listing'
+  
+  status:
+    description: 'Submission status (created, updated, error)'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'

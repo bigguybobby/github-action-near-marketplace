@@ -1,0 +1,118 @@
+name: Submit to NEAR Marketplace
+
+# Trigger on releases and version tags
+on:
+  release:
+    types: [published, created]
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*.*'
+
+jobs:
+  # Main submission job
+  submit-to-marketplace:
+    name: Submit to NEAR Marketplace
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      # Optional: for commenting on releases
+      # issues: write
+      # pull-requests: write
+    
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # 2. Submit to NEAR Marketplace
+      - name: Submit to NEAR Marketplace
+        id: submit
+        uses: ./  # Replace with: your-username/github-action-near-marketplace@v1
+        with:
+          # Required: API key from repository secrets
+          api-key: ${{ secrets.NEAR_MARKET_API_KEY }}
+          
+          # Optional: Override defaults
+          # project-path: '.'
+          # name: 'my-custom-name'
+          # description: 'Custom description for marketplace'
+          # tags: 'automation,github-actions,near'
+          # category: 'development'
+          # homepage: 'https://example.com'
+          # repository: 'https://github.com/user/repo'
+          # version: '1.0.0'
+          
+          # Update existing listing if found
+          update-existing: true
+          
+          # Set to true for testing
+          # dry-run: false
+      
+      # 3. Output results
+      - name: Display submission results
+        run: |
+          echo "🎉 Submission complete!"
+          echo "Status: ${{ steps.submit.outputs.status }}"
+          echo "Listing ID: ${{ steps.submit.outputs.listing-id }}"
+          echo "Listing URL: ${{ steps.submit.outputs.listing-url }}"
+      
+      # 4. Optional: Create summary
+      - name: Add job summary
+        run: |
+          echo "## 📦 NEAR Marketplace Submission" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status:** \`${{ steps.submit.outputs.status }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "🆔 **Listing ID:** \`${{ steps.submit.outputs.listing-id }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **URL:** ${{ steps.submit.outputs.listing-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Submitted on $(date)_" >> $GITHUB_STEP_SUMMARY
+
+  # Optional: Test job (runs on PR)
+  test-dry-run:
+    name: Test Marketplace Submission (Dry Run)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Dry run submission
+        uses: ./  # Replace with: your-username/github-action-near-marketplace@v1
+        with:
+          api-key: ${{ secrets.NEAR_MARKET_API_KEY }}
+          dry-run: true
+      
+      - name: Validation passed
+        run: echo "✅ Marketplace submission validation passed!"
+
+  # Optional: Multi-package submission (for monorepos)
+  submit-multiple-packages:
+    name: Submit Multiple Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    strategy:
+      matrix:
+        package:
+          - name: 'frontend'
+            path: './packages/frontend'
+            category: 'web-development'
+          - name: 'backend'
+            path: './packages/backend'
+            category: 'api'
+          - name: 'cli'
+            path: './packages/cli'
+            category: 'tools'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Submit ${{ matrix.package.name }}
+        uses: ./  # Replace with: your-username/github-action-near-marketplace@v1
+        with:
+          api-key: ${{ secrets.NEAR_MARKET_API_KEY }}
+          project-path: ${{ matrix.package.path }}
+          category: ${{ matrix.package.category }}
+          tags: 'monorepo,near,${{ matrix.package.name }}'
