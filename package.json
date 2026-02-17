@@ -1,17 +1,19 @@
 {
   "name": "github-action-near-marketplace",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "GitHub Action to auto-submit tools and packages to NEAR Marketplace",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "github-action",
     "near",
     "marketplace",
     "automation",
-    "ci-cd"
+    "ci-cd",
+    "blockchain"
   ],
   "author": "NEAR Marketplace Team",
   "license": "MIT",
@@ -19,9 +21,16 @@
     "@actions/core": "^1.10.1",
     "@actions/github": "^6.0.0"
   },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/github-action-near-marketplace"
+    "url": "https://github.com/bigguybobby/github-action-near-marketplace"
   },
-  "homepage": "https://github.com/your-username/github-action-near-marketplace#readme"
+  "homepage": "https://github.com/bigguybobby/github-action-near-marketplace#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"]
+  }
 }
